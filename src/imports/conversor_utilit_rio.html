@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor Utilitário</title>
+    <!-- Fontes -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ícones (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        :root {
+            /* Cores - Tema Claro */
+            --color-bg-app: #F3F4F6;
+            --color-surface: #FFFFFF;
+            --color-primary: #4F46E5;
+            --color-primary-hover: #4338CA;
+            --color-primary-light: #EEF2FF;
+            --color-text-main: #111827;
+            --color-text-muted: #6B7280;
+            --color-border: #E5E7EB;
+            --color-border-focus: #4F46E5;
+            --color-success: #10B981;
+            --color-success-light: #D1FAE5;
+            --color-error: #EF4444;
+
+            /* Tipografia */
+            --font-main: 'Inter', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.5rem;
+
+            /* Espaçamentos */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+
+            /* Bordas e Sombras */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            /* Transições */
+            --transition-fast: 0.15s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-bg-app);
+            color: var(--color-text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: var(--space-md);
+        }
+
+        .app-container {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Cabeçalho do App */
+        .app-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--color-border);
+            text-align: center;
+        }
+
+        .app-title {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--color-text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        .app-title i {
+            color: var(--color-primary);
+            font-size: 1.75rem;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: var(--space-md) var(--space-sm);
+            border: none;
+            background: none;
+            font-family: inherit;
+            font-size: var(--text-base);
+            font-weight: 600;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        .tab-btn:hover {
+            color: var(--color-primary);
+            background-color: var(--color-primary-light);
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+            padding: var(--space-lg);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: var(--space-md);
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--color-text-muted);
+            margin-bottom: var(--space-xs);
+        }
+
+        .input-wrapper {
+            display: flex;
+            position: relative;
+            align-items: center;
+        }
+
+        .input-field {
+            flex: 1;
+            width: 100%;
+            padding: 0.75rem var(--space-md);
+            font-family: inherit;
+            font-size: var(--text-base);
+            color: var(--color-text-main);
+            background-color: var(--color-bg-app);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--color-border-focus);
+            box-shadow: 0 0 0 3px var(--color-primary-light);
+        }
+
+        .input-field.font-mono {
+            font-family: var(--font-mono);
+            letter-spacing: 0.5px;
+        }
+
+        select.input-field {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+        }
+
+        /* Converter Layout específico (Grid com Select e Input) */
+        .converter-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: var(--space-sm);
+            align-items: end;
+        }
+
+        .converter-row .input-wrapper {
+            width: 100%;
+        }
+
+        .swap-icon {
+            display: flex;
+            justify-content: center;
+            margin: var(--space-sm) 0;
+            color: var(--color-text-muted);
+        }
+
+        .btn-copy {
+            position: absolute;
+            right: var(--space-xs);
+            background: none;
+            border: none;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-copy:hover {
+            color: var(--color-primary);
+            background-color: var(--color-bg-app);
+        }
+
+        .btn-copy.copied {
+            color: var(--color-success);
+            background-color: var(--color-success-light);
+        }
+
+        .copy-text {
+            font-size: 0.75rem;
+            margin-left: 4px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .btn-copy.copied .copy-text {
+            display: inline;
+        }
+
+        .btn-copy.copied .ph-copy {
+            display: none;
+        }
+        
+        .ph-check {
+            display: none;
+        }
+        
+        .btn-copy.copied .ph-check {
+            display: inline;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: var(--space-lg);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn-clear {
+            padding: 0.5rem 1rem;
+            background-color: transparent;
+            color: var(--color-text-muted);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .btn-clear:hover {
+            background-color: var(--color-error);
+            color: white;
+            border-color: var(--color-error);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-title"><i class="ph ph-calculator"></i> Conversor Utilitário</h1>
+        </header>
+
+        <!-- Navegação das Abas -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="unit-tab">
+                <i class="ph ph-ruler"></i> Unidades
+            </button>
+            <button class="tab-btn" data-tab="base-tab">
+                <i class="ph ph-binary"></i> Bases Numéricas
+            </button>
+        </nav>
+
+        <!-- Aba de Conversão de Unidades -->
+        <div id="unit-tab" class="tab-content active">
+            
+            <div class="form-group">
+                <label class="form-label" for="unit-category">Categoria</label>
+                <select id="unit-category" class="input-field">
+                    <option value="length">Comprimento</option>
+                    <option value="weight">Peso / Massa</option>
+                    <option value="temperature">Temperatura</option>
+                </select>
+            </div>
+
+            <div class="converter-row form-group">
+                <div>
+                    <label class="form-label" for="unit-from">De</label>
+                    <select id="unit-from" class="input-field"></select>
+                </div>
+                <div>
+                    <label class="form-label" for="val-from">Valor</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="val-from" class="input-field font-mono" placeholder="0" inputmode="decimal">
+                    </div>
+                </div>
+            </div>
+
+            <div class="swap-icon">
+                <i class="ph ph-arrows-down-up" style="font-size: 1.25rem;"></i>
+            </div>
+
+            <div class="converter-row form-group">
+                <div>
+                    <label class="form-label" for="unit-to">Para</label>
+                    <select id="unit-to" class="input-field"></select>
+                </div>
+                <div>
+                    <label class="form-label" for="val-to">Resultado</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="val-to" class="input-field font-mono" placeholder="0" inputmode="decimal">
+                        <button class="btn-copy" onclick="copyToClipboard('val-to', this)" title="Copiar">
+                            <i class="ph ph-copy"></i>
+                            <i class="ph ph-check"></i>
+                            <span class="copy-text">Copiado!</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-clear" onclick="clearUnitFields()">
+                    <i class="ph ph-trash"></i> Limpar
+                </button>
+            </div>
+        </div>
+
+        <div id="base-tab" class="tab-content">
+            
+            <div class="form-group">
+                <label class="form-label" for="base-dec">Decimal (Base 10)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="base-dec" class="input-field font-mono base-input" placeholder="0" inputmode="numeric">
+                    <button class="btn-copy" onclick="copyToClipboard('base-dec', this)">
+                        <i class="ph ph-copy"></i><i class="ph ph-check"></i><span class="copy-text">Copiado!</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="base-bin">Binário (Base 2)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="base-bin" class="input-field font-mono base-input" placeholder="0">
+                    <button class="btn-copy" onclick="copyToClipboard('base-bin', this)">
+                        <i class="ph ph-copy"></i><i class="ph ph-check"></i><span class="copy-text">Copiado!</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="base-oct">Octal (Base 8)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="base-oct" class="input-field font-mono base-input" placeholder="0" inputmode="numeric">
+                    <button class="btn-copy" onclick="copyToClipboard('base-oct', this)">
+                        <i class="ph ph-copy"></i><i class="ph ph-check"></i><span class="copy-text">Copiado!</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="base-hex">Hexadecimal (Base 16)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="base-hex" class="input-field font-mono base-input" placeholder="0" style="text-transform: uppercase;">
+                    <button class="btn-copy" onclick="copyToClipboard('base-hex', this)">
+                        <i class="ph ph-copy"></i><i class="ph ph-check"></i><span class="copy-text">Copiado!</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-clear" onclick="clearBaseFields()">
+                    <i class="ph ph-trash"></i> Limpar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * FUNÇÕES PURAS (PURE FUNCTIONS)
+         * Elas apenas recebem valores e retornam resultados, sem interagir com o DOM.
+         */
+
+        // --- CONVERSORES DE UNIDADE ---
+        
+        const unitFactors = {
+            length: {
+                m: 1,
+                km: 1000,
+                cm: 0.01,
+                mm: 0.001,
+                mi: 1609.34,
+                yd: 0.9144,
+                ft: 0.3048,
+                in: 0.0254
+            },
+            weight: {
+                g: 1,
+                kg: 1000,
+                mg: 0.001,
+                lb: 453.59237,
+                oz: 28.34952
+            }
+        };
+
+        const convertLinear = (val, fromUnit, toUnit, category) => {
+            if (isNaN(val)) return '';
+            const factors = unitFactors[category];
+            if (!factors || !factors[fromUnit] || !factors[toUnit]) return '';
+            
+            // Converte para base (metros ou gramas) e depois para o destino
+            const baseValue = val * factors[fromUnit];
+            const finalValue = baseValue / factors[toUnit];
+            
+            // Formata para evitar muitas casas decimais, mas mantém precisão
+            return parseFloat(finalValue.toPrecision(10));
+        };
+
+        const convertTemperature = (val, fromUnit, toUnit) => {
+            if (isNaN(val)) return '';
+            if (fromUnit === toUnit) return val;
+
+            let celsius = 0;
+            // Para Celsius
+            if (fromUnit === 'C') celsius = val;
+            else if (fromUnit === 'F') celsius = (val - 32) * 5/9;
+            else if (fromUnit === 'K') celsius = val - 273.15;
+
+            // De Celsius
+            let finalValue = 0;
+            if (toUnit === 'C') finalValue = celsius;
+            else if (toUnit === 'F') finalValue = (celsius * 9/5) + 32;
+            else if (toUnit === 'K') finalValue = celsius + 273.15;
+
+            return parseFloat(finalValue.toFixed(4));
+        };
+
+        // --- CONVERSORES DE BASE ---
+
+        const baseRegexMap = {
+            dec: /[^0-9]/g,
+            bin: /[^01]/g,
+            oct: /[^0-7]/g,
+            hex: /[^0-9A-Fa-f]/g
+        };
+
+        const convertBaseValues = (valStr, fromBase) => {
+            if (!valStr) return { dec: '', bin: '', oct: '', hex: '' };
+
+            const radixMap = { dec: 10, bin: 2, oct: 8, hex: 16 };
+            
+            // Converte para decimal (Base 10) garantindo precisão via BigInt para números grandes, 
+            // mas usaremos parseInt para manter simples e compatível com JS padrão
+            const decimalValue = parseInt(valStr, radixMap[fromBase]);
+            
+            if (isNaN(decimalValue)) return { dec: '', bin: '', oct: '', hex: '' };
+
+            return {
+                dec: decimalValue.toString(10),
+                bin: decimalValue.toString(2),
+                oct: decimalValue.toString(8),
+                hex: decimalValue.toString(16).toUpperCase()
+            };
+        };
+
+        const sanitizeInput = (val, regex) => {
+            return val.replace(regex, '');
+        };
+        
+        const sanitizeNumberInput = (val) => {
+            // Permite números, um ponto decimal e sinal de negativo no início (para temp)
+            return val.replace(/(?!^-)[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+        };
+
+        
+        // Dados Estruturais das Unidades
+        const unitOptions = {
+            length: [
+                { val: 'm', label: 'Metros (m)' },
+                { val: 'km', label: 'Quilômetros (km)' },
+                { val: 'cm', label: 'Centímetros (cm)' },
+                { val: 'mm', label: 'Milímetros (mm)' },
+                { val: 'in', label: 'Polegadas (in)' },
+                { val: 'ft', label: 'Pés (ft)' },
+                { val: 'yd', label: 'Jardas (yd)' },
+                { val: 'mi', label: 'Milhas (mi)' }
+            ],
+            weight: [
+                { val: 'kg', label: 'Quilogramas (kg)' },
+                { val: 'g', label: 'Gramas (g)' },
+                { val: 'mg', label: 'Miligramas (mg)' },
+                { val: 'lb', label: 'Libras (lb)' },
+                { val: 'oz', label: 'Onças (oz)' }
+            ],
+            temperature: [
+                { val: 'C', label: 'Celsius (°C)' },
+                { val: 'F', label: 'Fahrenheit (°F)' },
+                { val: 'K', label: 'Kelvin (K)' }
+            ]
+        };
+
+        // Elementos do DOM (Unidades)
+        const elCategory = document.getElementById('unit-category');
+        const elUnitFrom = document.getElementById('unit-from');
+        const elUnitTo = document.getElementById('unit-to');
+        const elValFrom = document.getElementById('val-from');
+        const elValTo = document.getElementById('val-to');
+
+        // Elementos do DOM (Bases)
+        const elBaseInputs = {
+            dec: document.getElementById('base-dec'),
+            bin: document.getElementById('base-bin'),
+            oct: document.getElementById('base-oct'),
+            hex: document.getElementById('base-hex')
+        };
+
+        // --- LÓGICA DE INTERFACE: TABS ---
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // --- LÓGICA DE INTERFACE: UNIDADES ---
+        
+        const populateUnitSelects = (category) => {
+            const options = unitOptions[category];
+            let html = options.map(opt => `<option value="${opt.val}">${opt.label}</option>`).join('');
+            
+            elUnitFrom.innerHTML = html;
+            elUnitTo.innerHTML = html;
+            
+            // Setar diferentes padrões para não ficar igual
+            if (options.length > 1) {
+                elUnitTo.selectedIndex = 1;
+            }
+            triggerUnitCalculation(true);
+        };
+
+        const triggerUnitCalculation = (fromToTarget = true) => {
+            const category = elCategory.value;
+            let sourceInput = fromToTarget ? elValFrom : elValTo;
+            let targetInput = fromToTarget ? elValTo : elValFrom;
+            let uFrom = fromToTarget ? elUnitFrom.value : elUnitTo.value;
+            let uTo = fromToTarget ? elUnitTo.value : elUnitFrom.value;
+
+            // Sanitiza entrada
+            sourceInput.value = sanitizeNumberInput(sourceInput.value);
+            
+            if (sourceInput.value === '' || sourceInput.value === '-') {
+                targetInput.value = '';
+                return;
+            }
+
+            const val = parseFloat(sourceInput.value);
+            let result;
+
+            if (category === 'temperature') {
+                result = convertTemperature(val, uFrom, uTo);
+            } else {
+                result = convertLinear(val, uFrom, uTo, category);
+            }
+
+            targetInput.value = result;
+        };
+
+        // Event Listeners Unidades
+        elCategory.addEventListener('change', (e) => populateUnitSelects(e.target.value));
+        
+        elUnitFrom.addEventListener('change', () => triggerUnitCalculation(true));
+        elUnitTo.addEventListener('change', () => triggerUnitCalculation(true));
+        
+        elValFrom.addEventListener('input', () => triggerUnitCalculation(true));
+        elValTo.addEventListener('input', () => triggerUnitCalculation(false)); // Bidirecional
+
+        
+        Object.keys(elBaseInputs).forEach(baseKey => {
+            const input = elBaseInputs[baseKey];
+            input.addEventListener('input', (e) => {
+                // Rigoroso: limpa caracteres inválidos instantaneamente
+                let rawValue = e.target.value;
+                let cleanValue = sanitizeInput(rawValue, baseRegexMap[baseKey]);
+                
+                if (rawValue !== cleanValue) {
+                    input.value = cleanValue;
+                }
+
+                // Calcula e atualiza os outros campos
+                const results = convertBaseValues(cleanValue, baseKey);
+                
+                Object.keys(elBaseInputs).forEach(targetBase => {
+                    if (targetBase !== baseKey) {
+                        elBaseInputs[targetBase].value = results[targetBase];
+                    }
+                });
+            });
+        });
+
+        // --- FUNÇÕES UTILITÁRIAS ---
+        
+        const clearUnitFields = () => {
+            elValFrom.value = '';
+            elValTo.value = '';
+        };
+
+        const clearBaseFields = () => {
+            Object.values(elBaseInputs).forEach(input => input.value = '');
+        };
+
+        const copyToClipboard = (inputId, btnElement) => {
+            const input = document.getElementById(inputId);
+            const textToCopy = input.value;
+
+            if (!textToCopy) return;
+
+            // Fallback usando execCommand se a API do Clipboard não estiver disponível no iframe
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(() => showCopyFeedback(btnElement));
+            } else {
+                // Cria um campo temporário
+                const tempInput = document.createElement('textarea');
+                tempInput.value = textToCopy;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    showCopyFeedback(btnElement);
+                } catch (err) {
+                    console.error('Falha ao copiar', err);
+                }
+                document.body.removeChild(tempInput);
+            }
+        };
+
+        const showCopyFeedback = (btnElement) => {
+            btnElement.classList.add('copied');
+            setTimeout(() => {
+                btnElement.classList.remove('copied');
+            }, 2000);
+        };
+
+        // Inicialização
+        populateUnitSelects('length');
+
+    </script>
+</body>
+</html>
