@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <!-- Substitui o ícone do "planeta" na aba do navegador pela sua imagem (capa.png) -->
+    <link rel="icon" type="image/png" href="/capa.png" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversor de Medidas</title>
+
+    <style>
+      /* Estilos básicos para o layout da página */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+      }
+
+      /* Estilo para fixar a capa.png no canto superior direito da página */
+      .logo-canto {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 60px; /* Ajuste o tamanho conforme necessário */
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- A imagem capa.png aparecendo no canto da página -->
+    <img src="/capa.png" alt="Ícone do Conversor" class="logo-canto" />
+    
+    <!-- Div onde o React/Vite vai injetar a aplicação -->
+    <div id="root"></div>
+    
+    <!-- Script principal da sua aplicação -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
